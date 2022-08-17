@@ -1,7 +1,7 @@
-const { gql } = require("apollo-server-express");
+import { gql } from "https://deno.land/x/oak_graphql/mod.ts";
 
 // TODO: Implement localNames for geocaching
-const typeDefs = gql`
+export const typeDefs = gql`
   type Query {
     getForecastByCoords(
       lat: String!
@@ -130,5 +130,3 @@ const typeDefs = gql`
     gust: Float
   }
 `;
-
-module.exports = { typeDefs };

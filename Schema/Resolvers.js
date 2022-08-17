@@ -1,5 +1,5 @@
-require("dotenv").config();
-const axios = require("axios").default;
+import "https://deno.land/std@0.152.0/dotenv/load.ts";
+import axiod from "https://deno.land/x/axiod/mod.ts";
 
 const FORECAST_URL = `https://api.openweathermap.org/data/2.5/forecast`;
 const GEOCODING_URL = "http://api.openweathermap.org/geo/1.0/direct";
@@ -11,7 +11,7 @@ const unitMapping = {
   KELVIN: "standard",
 };
 
-const resolvers = {
+export const resolvers = {
   Query: {
     /* getForecastByCoords(
       lat: String!
@@ -20,7 +20,7 @@ const resolvers = {
     ): [Forecast!]! */
     getForecastByCoords: async (parent, args) => {
       try {
-        const { data } = await axios.get(FORECAST_URL, {
+        const { data } = await axiod.get(FORECAST_URL, {
           params: {
             lat: args.lat,
             lon: args.lon,
@@ -29,7 +29,7 @@ const resolvers = {
                 ? unitMapping[args.config.units]
                 : "metric",
             lang: args.config && args.config.lang ? args.config.lang : "en",
-            appid: process.env.API_KEY,
+            appid: Deno.env.get("API_KEY"),
           },
         });
         console.log(data.list);
@@ -64,11 +64,11 @@ const resolvers = {
       try {
         const currentFetchResults = [];
 
-        const { data: firstFetch } = await axios.get(GEOCODING_URL, {
+        const { data: firstFetch } = await axiod.get(GEOCODING_URL, {
           params: {
             q: args.name,
             limit: 3,
-            appid: process.env.API_KEY,
+            appid: Deno.env.get("API_KEY"),
           },
         });
 
@@ -77,7 +77,7 @@ const resolvers = {
 
         await Promise.all(
           firstFetch.map(async (result, index) => {
-            let { data } = await axios.get(CURRENT_WEATHER_URL, {
+            let { data } = await axiod.get(CURRENT_WEATHER_URL, {
               params: {
                 lat: result.lat,
                 lon: result.lon,
@@ -86,7 +86,7 @@ const resolvers = {
                     ? unitMapping[args.config.units]
                     : "metric",
                 lang: args.config && args.config.lang ? args.config.lang : "en",
-                appid: process.env.API_KEY,
+                appid: Deno.env.get("API_KEY"),
               },
             });
 
@@ -122,4 +122,3 @@ const resolvers = {
     },
   },
 };
-module.exports = { resolvers };

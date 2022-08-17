@@ -1,27 +1,33 @@
-require("dotenv").config();
-import { typeDefs } from "./Schema/TypeDefs";
-import { resolvers } from "./Schema/Resolvers";
+import "https://deno.land/std@0.152.0/dotenv/load.ts";
+import { Application, Router } from "https://deno.land/x/oak@v10.0.0/mod.ts";
+import { applyGraphQL } from "https://deno.land/x/oak_graphql/mod.ts";
+import { typeDefs } from "./Schema/TypeDefs.js";
+import { resolvers } from "./Schema/Resolvers.js";
 
-const { ApolloServer } = require("apollo-server-express");
+const app = new Application();
 
-const express = require("express");
-const app = express();
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  introspection: true,
-  playground: true,
+app.use(async (ctx, next) => {
+  await next();
+  const rt = ctx.response.headers.get("X-Response-Time");
+  console.log(`${ctx.request.method} ${ctx.request.url} - ${rt}`);
 });
 
-async function main() {
-  await server.start();
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  ctx.response.headers.set("X-Response-Time", `${ms}ms`);
+});
 
-  server.applyMiddleware({ app });
+const GraphQLService = await applyGraphQL<Router>({
+  Router,
+  typeDefs: typeDefs,
+  resolvers: resolvers,
+});
 
-  app.listen({ port: process.env.PORT || 5000 }, () => {
-    console.log(`server running on port ${process.env.PORT || 5000}`);
-  });
-}
+app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
-main();
+console.log(
+  `Server start at http://localhost:${Deno.env.get("PORT") || 6969}/graphql`
+);
+app.listen({ port: 6969 });

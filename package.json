@@ -1,17 +1,19 @@
 {
-  "dependencies": {
-    "apollo-server-express": "^3.10.1",
-    "axios": "^0.27.2",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "graphql": "^15.8.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.19"
-  },
+  "name": "ww-backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "compile": "tsc -w",
-    "start-server": "nodemon index.js",
-    "dev": "concurrently --kill-others \"npm run start-server\" \"npm run compile\""
-  }
+    "run": "deno run --allow-env --allow-read --allow-net .\\index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/realemeralds/WW-backend.git"
+  },
+  "author": "realemeralds",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/realemeralds/WW-backend/issues"
+  },
+  "homepage": "https://github.com/realemeralds/WW-backend#readme"
 }
