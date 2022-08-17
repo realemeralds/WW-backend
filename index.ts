@@ -1,3 +1,4 @@
+require("dotenv").config();
 import { typeDefs } from "./Schema/TypeDefs";
 import { resolvers } from "./Schema/Resolvers";
 
@@ -18,8 +19,8 @@ async function main() {
 
   server.applyMiddleware({ app });
 
-  app.listen({ port: 5000 }, () => {
-    console.log("server running on port 5000");
+  app.listen({ port: process.env.PORT || 5000 }, () => {
+    console.log(`server running on port ${process.env.PORT || 5000}`);
   });
 }
 

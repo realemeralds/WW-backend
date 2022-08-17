@@ -1,33 +1,120 @@
 const { gql } = require("apollo-server-express");
 
-// getCityByName(name: String!, country: String, config: ConfigInput): [City!]!;
+// TODO: Implement localNames for geocaching
 const typeDefs = gql`
   type Query {
-    getForecastByCoords(lat: String!, lon: String!): [Forecast!]!
+    getForecastByCoords(
+      lat: String!
+      lon: String!
+      config: Config
+    ): [Forecast!]!
+    getLocationByName(name: String!, config: Config): [Location!]!
+  }
+
+  type Location {
+    name: String!
+    country: String!
+    state: String
+    lat: String!
+    lon: String!
+    currentWeather: CurrentWeather!
+  }
+
+  type CurrentWeather {
+    dt: Int!
+    timezone: Int!
+    weather: [WeatherDetails!]!
+    main: ForecastDetails!
+    visibility: String!
+    wind: WindDetails!
+    cloudCover: Float!
+  }
+
+  input Config {
+    units: UnitFormat
+    lang: LanguageFormat
+  }
+
+  enum UnitFormat {
+    CELCIUS
+    FARENHEIT
+    KELVIN
+  }
+
+  enum LanguageFormat {
+    af
+    al
+    ar
+    az
+    bg
+    ca
+    cz
+    da
+    de
+    el
+    en
+    eu
+    fa
+    fi
+    fr
+    gl
+    he
+    hi
+    hr
+    hu
+    id
+    it
+    ja
+    kr
+    la
+    lt
+    mk
+    no
+    nl
+    pl
+    pt
+    pt_br
+    ro
+    ru
+    sv
+    se
+    sk
+    sl
+    sp
+    es
+    sr
+    th
+    tr
+    ua
+    uk
+    vi
+    zh_cn
+    zh_tw
+    zu
   }
 
   type Forecast {
     dt: Int!
-    dt_txt: String!
+    dtTxt: String!
     main: ForecastDetails!
-    weather: WeatherDetails!
+    weather: [WeatherDetails!]!
     cloudCover: Int!
     wind: WindDetails!
     visibility: Int!
-    chanceOfRain: Int!
-    volumeOfRain: Int!
-    volumeOfSnow: Int!
+    chanceOfRain: Float!
+    volumeOfRain: Float!
+    volumeOfSnow: Float!
   }
 
   type ForecastDetails {
-    temp: Int!
-    feelsLike: Int!
-    tempMin: Int!
-    tempMax: Int!
-    pressure: Int!
-    pressureSeaLevel: Int!
-    grndLevel: Int!
+    temp: Float!
+    feelsLike: Float!
     humidity: Int!
+    tempMin: Float!
+    tempMax: Float!
+    pressure: Int!
+    seaLevel: Int
+    grndLevel: Int
   }
 
   type WeatherDetails {
@@ -40,7 +127,7 @@ const typeDefs = gql`
   type WindDetails {
     speed: Float!
     deg: Int!
-    gust: Float!
+    gust: Float
   }
 `;
 

@@ -10,6 +10,8 @@
     "nodemon": "^2.0.19"
   },
   "scripts": {
-    "dev": "tsc .\\index.ts && nodemon index.js"
+    "compile": "tsc -w",
+    "start-server": "nodemon index.js",
+    "dev": "concurrently --kill-others \"npm run start-server\" \"npm run compile\""
   }
 }
