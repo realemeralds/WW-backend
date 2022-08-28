@@ -1,10 +1,13 @@
 import "https://deno.land/std@0.152.0/dotenv/load.ts";
 import { Application, Router } from "https://deno.land/x/oak@v10.0.0/mod.ts";
 import { applyGraphQL } from "https://deno.land/x/oak_graphql/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { typeDefs } from "./Schema/TypeDefs.js";
 import { resolvers } from "./Schema/Resolvers.js";
 
 const app = new Application();
+
+app.use(oakCors());
 
 app.use(async (ctx, next) => {
   await next();
@@ -28,6 +31,6 @@ const GraphQLService = await applyGraphQL<Router>({
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
 console.log(
-  `Server start at http://localhost:${Deno.env.get("PORT") || 6969}/graphql`
+  `Server start at http://localhost:${Deno.env.get("PORT") || 5000}/graphql`
 );
-app.listen({ port: 6969 });
+app.listen({ port: 5000 });

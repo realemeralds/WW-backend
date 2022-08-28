@@ -8,7 +8,7 @@ export const typeDefs = gql`
       lon: String!
       config: Config
     ): [Forecast!]!
-    getLocationByName(name: String!, config: Config): [Location!]!
+    getLocationByName(name: String!, config: Config): [Location!]
   }
 
   type Location {
