@@ -20,7 +20,37 @@ export const resolvers = {
     ): [Forecast!]! */
     getForecastByCoords: async (parent, args) => {
       try {
-        const { data } = await axiod.get(FORECAST_URL, {
+        const { data: firstFetch } = await axiod.get(CURRENT_WEATHER_URL, {
+          params: {
+            lat: args.lat,
+            lon: args.lon,
+            limit: 3,
+            appid: Deno.env.get("API_KEY"),
+          },
+        });
+
+        console.log("firstFetch: ...");
+        console.log(firstFetch);
+
+        const populatedCurrentWeather = {
+          ...firstFetch,
+          main: {
+            ...firstFetch.main,
+            feelsLike: firstFetch.main.feels_like,
+            tempMin: firstFetch.main.temp_min,
+            tempMax: firstFetch.main.temp_max,
+            seaLevel: firstFetch.main.sea_level,
+            grndLevel: firstFetch.main.grnd_level,
+            tempKf: firstFetch.main.temp_kf,
+          },
+          cloudCover: firstFetch.clouds.all,
+          volumeOfRain: firstFetch.rain ? firstFetch.rain["3h"] : 0.0,
+          volumeOfSnow: firstFetch.snow ? firstFetch.snow["3h"] : 0.0,
+        };
+
+        console.log(populatedCurrentWeather);
+
+        const { data: secondFetch } = await axiod.get(FORECAST_URL, {
           params: {
             lat: args.lat,
             lon: args.lon,
@@ -32,28 +62,69 @@ export const resolvers = {
             appid: Deno.env.get("API_KEY"),
           },
         });
-        console.log(data.list);
 
-        const populatedList = data.list.map((json) => ({
-          ...json,
-          dtTxt: json.dt_txt,
-          main: {
-            ...json.main,
-            feelsLike: json.main.feels_like,
-            tempMin: json.main.temp_min,
-            tempMax: json.main.temp_max,
-            seaLevel: json.main.sea_level,
-            grndLevel: json.main.grnd_level,
-            tempKf: json.main.temp_kf,
-          },
-          cloudCover: json.clouds.all,
-          chanceOfRain: json.pop,
-          volumeOfRain: json.rain ? json.rain["3h"] : 0.0,
-          volumeOfSnow: json.snow ? json.snow["3h"] : 0.0,
-        }));
-        console.log(populatedList);
+        const initalHourOfDay = secondFetch.list[0].dt / 3600;
 
-        return populatedList;
+        const forecasts = {
+          threeday: secondFetch.list.find(
+            (forecast) =>
+            ([10, 11, 12].includes(
+              (forecast.dt + firstFetch.timezone) / 3600 % 24
+            )) && (forecast.dt / 3600 - initalHourOfDay >= 58)
+          ),
+          fiveday: secondFetch.list.find(
+            (forecast) =>
+            ([10, 11, 12, 13, 14, 15].includes(
+              (forecast.dt + firstFetch.timezone) / 3600 % 24
+            )) % 24 && (forecast.dt / 3600 - initalHourOfDay >= 106)
+          ),
+        };
+
+        const populatedForecasts = {}
+
+        for (const key in forecasts) {
+          const json = forecasts[key]
+
+          populatedForecasts[key] = {
+            ...json,
+            dtTxt: json.dt_txt,
+            main: {
+              ...json.main,
+              feelsLike: json.main.feels_like,
+              tempMin: json.main.temp_min,
+              tempMax: json.main.temp_max,
+              seaLevel: json.main.sea_level,
+              grndLevel: json.main.grnd_level,
+              tempKf: json.main.temp_kf,
+            },
+            cloudCover: json.clouds.all,
+            chanceOfRain: json.pop,
+            volumeOfRain: json.rain ? json.rain["3h"] : 0.0,
+            volumeOfSnow: json.snow ? json.snow["3h"] : 0.0,
+          }
+        }
+
+        // console.log(
+        //   "\n------------------POPULATED FORECASTS -----------------------"
+        // );
+        // secondFetch.list.forEach((input) => {
+        //   console.log((input.dt + firstFetch.timezone) / 3600 % 24) ;
+        //   console.log([10, 11, 12].includes(
+        //     (input.dt + firstFetch.timezone) / 3600 % 24
+        //   ))
+        //   console.log(input.dt / 3600 - initalHourOfDay);
+        //   console.log((input.dt / 3600 - initalHourOfDay >= 58))
+        //   console.log("---------------------------")
+        // });
+        console.log(populatedForecasts);
+
+        const populatedDict = {
+          current: populatedCurrentWeather,
+          ...populatedForecasts,
+        };
+        console.log(populatedDict);
+
+        return populatedDict;
       } catch (err) {
         console.log(err);
       }
@@ -107,8 +178,8 @@ export const resolvers = {
                   tempKf: data.main.temp_kf,
                 },
                 cloudCover: data.clouds.all,
-                volumeOfRain: data.rain ? json.rain["3h"] : 0.0,
-                volumeOfSnow: data.snow ? json.snow["3h"] : 0.0,
+                volumeOfRain: data.rain ? data.rain["3h"] : 0.0,
+                volumeOfSnow: data.snow ? data.snow["3h"] : 0.0,
               },
             });
           })

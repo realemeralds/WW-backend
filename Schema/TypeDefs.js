@@ -7,7 +7,7 @@ export const typeDefs = gql`
       lat: String!
       lon: String!
       config: Config
-    ): [Forecast!]!
+    ): CombinedForecast!
     getLocationByName(name: String!, config: Config): [Location!]
   }
 
@@ -28,6 +28,8 @@ export const typeDefs = gql`
     visibility: String!
     wind: WindDetails!
     cloudCover: Float!
+    volumeOfRain: Float
+    volumeOfSnow: Float
   }
 
   input Config {
@@ -91,6 +93,12 @@ export const typeDefs = gql`
     zh_cn
     zh_tw
     zu
+  }
+
+  type CombinedForecast {
+    current: CurrentWeather!
+    threeday: Forecast!
+    fiveday: Forecast!
   }
 
   type Forecast {

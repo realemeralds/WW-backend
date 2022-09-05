@@ -33,4 +33,4 @@ app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 console.log(
   `Server start at http://localhost:${Deno.env.get("PORT") || 5000}/graphql`
 );
-app.listen({ port: 5000 });
+app.listen({ port: 5001 });
