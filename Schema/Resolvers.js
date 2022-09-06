@@ -66,27 +66,44 @@ export const resolvers = {
         const initalHourOfDay = secondFetch.list[0].dt / 3600;
 
         const forecasts = {
-          threeday: secondFetch.list.find(
+          twoday: secondFetch.list.find(
             (forecast) =>
             ([10, 11, 12].includes(
               (forecast.dt + firstFetch.timezone) / 3600 % 24
-            )) && (forecast.dt / 3600 - initalHourOfDay >= 58)
+            )) && (forecast.dt / 3600 - initalHourOfDay >= 36)
           ),
-          fiveday: secondFetch.list.find(
+          fourday: secondFetch.list.find(
             (forecast) =>
             ([10, 11, 12, 13, 14, 15].includes(
               (forecast.dt + firstFetch.timezone) / 3600 % 24
-            )) % 24 && (forecast.dt / 3600 - initalHourOfDay >= 106)
+            )) % 24 && (forecast.dt / 3600 - initalHourOfDay >= 84)
           ),
         };
 
+        console.log('-----------------------FORECASTS---------------------------')
+        console.log(forecasts)
+
         const populatedForecasts = {}
+        console.log(
+          "\n------------------POPULATED FORECASTS -----------------------"
+        );
+        secondFetch.list.forEach((input) => {
+          console.log((input.dt + firstFetch.timezone) / 3600 % 24) ;
+          console.log([10, 11, 12].includes(
+            (input.dt + firstFetch.timezone) / 3600 % 24
+          ))
+          console.log(input.dt / 3600 - initalHourOfDay);
+          console.log((input.dt / 3600 - initalHourOfDay >= 58))
+          console.log("---------------------------")
+        });
+
 
         for (const key in forecasts) {
           const json = forecasts[key]
 
           populatedForecasts[key] = {
             ...json,
+            dtTxt: json.dt_txt,
             main: {
               ...json.main,
               feelsLike: json.main.feels_like,

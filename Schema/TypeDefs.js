@@ -97,8 +97,8 @@ export const typeDefs = gql`
 
   type CombinedForecast {
     current: CurrentWeather!
-    threeday: Forecast!
-    fiveday: Forecast!
+    twoday: Forecast!
+    fourday: Forecast!
   }
 
   type Forecast {

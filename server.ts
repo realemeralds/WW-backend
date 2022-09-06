@@ -30,7 +30,7 @@ const GraphQLService = await applyGraphQL<Router>({
 
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
-console.log(
-  `Server start at http://localhost:${Deno.env.get("PORT") || 5000}/graphql`
-);
-app.listen({ port: 5001 });
+const PORT = parseInt(Deno.env.get("PORT")) || 5000;
+
+console.log(`Server start at http://localhost:${PORT}/graphql`);
+app.listen({ port: PORT });
