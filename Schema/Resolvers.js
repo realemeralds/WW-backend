@@ -24,7 +24,11 @@ export const resolvers = {
           params: {
             lat: args.lat,
             lon: args.lon,
-            limit: 3,
+            units:
+            args.config && args.config.units
+              ? unitMapping[args.config.units]
+              : "metric",
+            lang: args.config && args.config.lang ? args.config.lang : "en",
             appid: Deno.env.get("API_KEY"),
           },
         });
