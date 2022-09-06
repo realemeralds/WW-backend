@@ -87,7 +87,6 @@ export const resolvers = {
 
           populatedForecasts[key] = {
             ...json,
-            dtTxt: json.dt_txt,
             main: {
               ...json.main,
               feelsLike: json.main.feels_like,
@@ -104,18 +103,6 @@ export const resolvers = {
           }
         }
 
-        // console.log(
-        //   "\n------------------POPULATED FORECASTS -----------------------"
-        // );
-        // secondFetch.list.forEach((input) => {
-        //   console.log((input.dt + firstFetch.timezone) / 3600 % 24) ;
-        //   console.log([10, 11, 12].includes(
-        //     (input.dt + firstFetch.timezone) / 3600 % 24
-        //   ))
-        //   console.log(input.dt / 3600 - initalHourOfDay);
-        //   console.log((input.dt / 3600 - initalHourOfDay >= 58))
-        //   console.log("---------------------------")
-        // });
         console.log(populatedForecasts);
 
         const populatedDict = {
